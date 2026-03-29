@@ -12,7 +12,7 @@
   "content_scripts": [
     {
       "matches": ["*://*.nettavisen.no/"],
-      "js": ["content.js"],
+      "js": ["nettavisen.js"],
       "run_at": "document_idle"
     }
   ],
