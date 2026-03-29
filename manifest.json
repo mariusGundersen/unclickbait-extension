@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Replace link text with actual article titles from news sites",
   "permissions": ["activeTab", "storage"],
-  "host_permissions": ["*://*.nettavisen.no/*"],
+  "host_permissions": ["*://*.nettavisen.no/*", "*://*.dagbladet.no/*"],
   "background": {
     "scripts": ["background.js"],
     "type": "module"
@@ -13,6 +13,11 @@
     {
       "matches": ["*://*.nettavisen.no/"],
       "js": ["nettavisen.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.dagbladet.no/"],
+      "js": ["dagbladet.js"],
       "run_at": "document_idle"
     }
   ],

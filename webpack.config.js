@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     background: './src/background/background.ts',
     nettavisen: './src/content/nettavisen.ts',
+    dagbladet: './src/content/dagbladet.ts',
     popup: './src/popup/popup.ts',
   },
   output: {

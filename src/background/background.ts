@@ -87,44 +87,41 @@ async function fetchAndExtractTitle(url: string): Promise<{ title: string | null
     if (!response.ok) return { title: null, description: null };
 
     const html = await response.text();
-    return extractTitleAndDescription(html);
+    
+    const dom = new DOMParser().parseFromString(html, 'text/html');
+    return extractTitleAndDescription(dom);
   } catch {
     clearTimeout(timeoutId);
     return { title: null, description: null };
   }
 }
 
-function extractTitleAndDescription(html: string): { title: string | null; description: string | null } {
-  const title = extractTitle(html);
-  const description = extractDescription(html);
+function extractTitleAndDescription(dom: Document): { title: string | null; description: string | null } {
+  const title = extractTitle(dom);
+  const description = extractDescription(dom);
+
+
   return { title, description };
 }
 
-function extractTitle(html: string): string | null {
-  const ogMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
-  if (ogMatch) return decodeHtml(ogMatch[1]);
+function extractTitle(dom: Document): string | null {
+  const titleElement = dom.querySelector('title')?.textContent?.trim() ?? '';
 
-  const twitterMatch = html.match(/<meta[^>]+name=["']twitter:title["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:title["']/i);
-  if (twitterMatch) return decodeHtml(twitterMatch[1]);
+  const ogTitle = dom.querySelector('meta[property="og:title"]')?.getAttribute('content')?.trim() ?? '';
 
-  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-  if (titleMatch) return decodeHtml(cleanTitle(titleMatch[1]));
+  const twitterTitle = dom.querySelector('meta[name="twitter:title"]')?.getAttribute('content')?.trim() ?? '';
 
-  return null;
+  return [titleElement, ogTitle, twitterTitle].sort((a, b) => b.length - a.length)[0] || null;
 }
 
-function extractDescription(html: string): string | null {
-  const ogMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i);
-  if (ogMatch) return decodeHtml(ogMatch[1]);
+function extractDescription(dom: Document): string | null {
+  const description = dom.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() ?? '';
 
-  const nameMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i);
-  if (nameMatch) return decodeHtml(nameMatch[1]);
+  const ogDescription = dom.querySelector('meta[property="og:description"]')?.getAttribute('content')?.trim() ?? '';
 
-  return null;
+  const twitterDescription = dom.querySelector('meta[name="twitter:description"]')?.getAttribute('content')?.trim() ?? '';
+
+  return [description, ogDescription, twitterDescription].sort((a, b) => b.length - a.length)[0] || null;
 }
 
 function decodeHtml(html: string): string {
