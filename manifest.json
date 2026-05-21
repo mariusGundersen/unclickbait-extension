@@ -3,21 +3,37 @@
   "name": "Unclickbait",
   "version": "1.0.0",
   "description": "Replace link text with actual article titles from news sites",
-  "permissions": ["activeTab", "storage"],
-  "host_permissions": ["*://*.nettavisen.no/*", "*://*.dagbladet.no/*"],
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.nettavisen.no/*",
+    "*://*.dagbladet.no/*"
+  ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "background.js"
+    ],
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["*://*.nettavisen.no/"],
-      "js": ["nettavisen.js"],
+      "matches": [
+        "*://*.nettavisen.no/"
+      ],
+      "js": [
+        "nettavisen.js"
+      ],
       "run_at": "document_idle"
     },
     {
-      "matches": ["*://*.dagbladet.no/"],
-      "js": ["dagbladet.js"],
+      "matches": [
+        "*://*.dagbladet.no/"
+      ],
+      "js": [
+        "dagbladet.js"
+      ],
       "run_at": "document_idle"
     }
   ],
@@ -33,5 +49,14 @@
     "16": "assets/icons/icon16.png",
     "48": "assets/icons/icon48.png",
     "128": "assets/icons/icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "unclickbait@mariusgundersen.net",
+      "data_collection_permissions": {
+        "required": ["none"]
+      },
+      "strict_min_version": "149.0"
+    }
   }
 }
