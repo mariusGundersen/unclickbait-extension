@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         currentDomain.includes('dagbladet') ||
                         currentDomain.includes('nrk') ||
                         currentDomain.includes('e24') ||
-                        currentDomain.includes('dn');
+                        currentDomain.includes('dn') ||
+                        currentDomain.includes('ao');
     
     currentSiteEl.textContent = currentDomain;
     
@@ -32,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
       'dagbladet.no',
       'nrk.no',
       'e24.no',
-      'dn.no'
+      'dn.no',
+      'ao.no'
     ];
     supportedSitesEl.innerHTML = sites.map(s => `<li>${s}</li>`).join('');
   }

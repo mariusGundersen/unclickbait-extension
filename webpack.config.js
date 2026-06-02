@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   entry: {
     background: './src/background/background.ts',
-    nettavisen: './src/content/nettavisen.ts',
+    amedia: './src/content/amedia.ts',
     dagbladet: './src/content/dagbladet.ts',
     popup: './src/popup/popup.ts',
   },

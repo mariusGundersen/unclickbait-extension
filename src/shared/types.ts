@@ -5,6 +5,7 @@ export const SUPPORTED_DOMAINS = [
   'nrk.no',
   'e24.no',
   'dn.no',
+  'ao.no',
 ];
 
 export interface TitleResult {

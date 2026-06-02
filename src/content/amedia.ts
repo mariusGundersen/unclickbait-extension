@@ -55,7 +55,32 @@ function replaceLinkText(span: HTMLElement, link: HTMLAnchorElement, newTitle: s
   const currentText = span.textContent?.trim() || '';
   if (!currentText || currentText === newTitle) return;
 
-  span.textContent = newTitle;
+  const [tags, title] = newTitle.split(' | ');
+
+  if(tags && title){
+    const tagsElm = document.createElement('span');
+    tagsElm.style.fontSize = '0.8em';
+    tagsElm.style.display = 'block';
+    tagsElm.textContent = tags;
+
+    const titleElm = document.createElement('span');
+    titleElm.textContent = title;
+    span.replaceChildren(tagsElm, titleElm);
+  }else{
+    span.textContent = newTitle;
+  }
+  
+  // Remove the annoying red dot
+  if(span.previousElementSibling?.nodeName === 'BREAKING-TEXT'){
+    span.previousElementSibling.remove();
+  }
+
+  const brickParent = span.closest('.break.brick-c-JbDTi');
+  if(brickParent){
+    brickParent.classList.remove('break', 'brick-c-JbDTi');
+    span.style.fontSize = 'var(--brick-fontSizes-pretitleXl)';
+  }
+
   processedSpans.add(span);
 
   link.style.borderBottom = '1px dotted #666';
@@ -74,6 +99,7 @@ async function fetchTitles(urls: string[]): Promise<Map<string, { title: string 
     };
 
     chrome.runtime.sendMessage(message, (response: FetchTitlesResponse | undefined) => {
+      console.log('got response', response);
       if (response?.results) {
         for (const result of response.results) {
           results.set(result.url, { title: result.title, description: result.description });
@@ -89,10 +115,14 @@ async function fetchTitles(urls: string[]): Promise<Map<string, { title: string 
 async function processLinks(spans: HTMLElement[]): Promise<void> {
   const headlineLinks = findHeadlineLinks(spans);
 
+  console.log(headlineLinks);
+
   if (headlineLinks.length === 0) return;
 
   const urls = headlineLinks.map(link => link.url);
   const titles = await fetchTitles(urls);
+
+  console.log('got titles', titles);
 
   for (const item of headlineLinks) {
     const data = titles.get(item.url);
@@ -104,7 +134,7 @@ async function processLinks(spans: HTMLElement[]): Promise<void> {
 
 async function start() {
   const spans = Array.from(document.querySelectorAll<HTMLElement>(
-    'a[href] [itemprop="titleText"]'
+    'a[itemprop="url"] [itemprop="titleText"]'
   ));
 
   const intersectionObserver = new IntersectionObserver((entries) => {
@@ -124,7 +154,7 @@ async function start() {
     for (const mutation of mutations) {
       if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
         const nodes = Array.from(mutation.addedNodes)
-          .flatMap(node => node instanceof HTMLElement ? Array.from(node.querySelectorAll<HTMLElement>('a[href] [itemprop="titleText"]')) : []);
+          .flatMap(node => node instanceof HTMLElement ? Array.from(node.querySelectorAll<HTMLElement>('a[itemprop="url"] [itemprop="titleText"]')) : []);
         for (const span of nodes) {
           intersectionObserver.observe(span);
         }
