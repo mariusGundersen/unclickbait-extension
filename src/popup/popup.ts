@@ -1,4 +1,4 @@
-import './popup.css';
+import { SUPPORTED_DOMAINS } from '../shared/types';
 
 document.addEventListener('DOMContentLoaded', () => {
   const statusEl = document.getElementById('status');
@@ -7,13 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (statusEl && currentSiteEl) {
     const currentDomain = window.location.hostname.replace('www.', '');
-    const isSupported = currentDomain.includes('nettavisen') || 
-                        currentDomain.includes('vg.') || 
-                        currentDomain.includes('dagbladet') ||
-                        currentDomain.includes('nrk') ||
-                        currentDomain.includes('e24') ||
-                        currentDomain.includes('dn') ||
-                        currentDomain.includes('ao');
+    const isSupported = SUPPORTED_DOMAINS.some(domain => currentDomain.endsWith(domain));
     
     currentSiteEl.textContent = currentDomain;
     
@@ -27,15 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   if (supportedSitesEl) {
-    const sites = [
-      'nettavisen.no',
-      'vg.no',
-      'dagbladet.no',
-      'nrk.no',
-      'e24.no',
-      'dn.no',
-      'ao.no'
-    ];
-    supportedSitesEl.innerHTML = sites.map(s => `<li>${s}</li>`).join('');
+    supportedSitesEl.innerHTML = SUPPORTED_DOMAINS.map(s => `<li>${s}</li>`).join('');
   }
 });

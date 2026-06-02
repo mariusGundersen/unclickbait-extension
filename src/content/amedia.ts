@@ -99,7 +99,6 @@ async function fetchTitles(urls: string[]): Promise<Map<string, { title: string 
     };
 
     chrome.runtime.sendMessage(message, (response: FetchTitlesResponse | undefined) => {
-      console.log('got response', response);
       if (response?.results) {
         for (const result of response.results) {
           results.set(result.url, { title: result.title, description: result.description });
@@ -115,14 +114,10 @@ async function fetchTitles(urls: string[]): Promise<Map<string, { title: string 
 async function processLinks(spans: HTMLElement[]): Promise<void> {
   const headlineLinks = findHeadlineLinks(spans);
 
-  console.log(headlineLinks);
-
   if (headlineLinks.length === 0) return;
 
   const urls = headlineLinks.map(link => link.url);
   const titles = await fetchTitles(urls);
-
-  console.log('got titles', titles);
 
   for (const item of headlineLinks) {
     const data = titles.get(item.url);
